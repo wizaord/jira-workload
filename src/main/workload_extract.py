@@ -34,7 +34,10 @@ def main():
 
     for username in worklogs.get_usernames():
         user_workloads = worklogs.get_workloads_for_user(username)
-        logger.info("User %s - workloads %s", username, user_workloads)
+        user_workload_issues = user_workloads.get_issues()
+        for issue in user_workload_issues:
+            user_workloads_issue = worklogs.get_workloads_for_issue(issue)
+            logger.info("User %s - issue %s - total timeSpent %s", username, issue, user_workloads_issue.get_total_time_spent())
 
     logger.info('End of the workload extraction')
 

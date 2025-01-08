@@ -48,7 +48,7 @@ class JiraAdapter:
         response = requests.get(url,
                                 headers=self.__request_default_headers,
                                 auth=self.__auth)
-        logger.info("ISSUE DETAILS => %s", response.json())
+        logger.debug("ISSUE DETAILS => %s", response.json())
         if response.status_code == 200:
             issue_dict = response.json()
             return Issue(issue_id, issue_dict["key"], issue_dict["fields"]["summary"])
