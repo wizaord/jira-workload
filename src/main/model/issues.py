@@ -11,7 +11,6 @@ class Issues:
     def __init__(self, issues: list[Issue]):
         self.issues = issues
 
-
     def get_issue_by_id(self, issue_id: str) -> Issue:
         """Return the issue with the given id"""
         for issue in self.issues:
