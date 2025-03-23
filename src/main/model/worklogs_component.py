@@ -1,9 +1,11 @@
+"""
+This module contains the class that represents the workloads for a component.
+"""
 from dataclasses import dataclass
 
+from src.main.model.worklog import Worklog
 from src.main.model.worklogs_issue import WorklogsForIssue
 from src.main.model.worklogs_user import WorklogsForUser
-from src.main.model.worklog import Worklog
-
 
 
 @dataclass
@@ -13,10 +15,12 @@ class WorklogsForComponent:
     workloads: list[Worklog]
 
     def __init__(self, jira_component_name: str, workloads: list[Worklog]):
+        """Initialize the WorkloadsForComponent"""
         self.jira_component_name = jira_component_name
         self.workloads = workloads
 
     def extend(self, workloads: list[Worklog]):
+        """Append worklogs to the existing workloads"""
         self.workloads.extend(workloads)
 
     def get_usernames(self) -> set[str]:

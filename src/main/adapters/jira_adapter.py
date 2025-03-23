@@ -1,18 +1,21 @@
+"""
+Adapter to access to Jira
+"""
 import logging
 from datetime import datetime
 
 import requests
 from requests.auth import HTTPBasicAuth
 
-from src.main.model.exceptions import JiraGetIssueException, JiraGetWorkloadFromIssue
+from src.main.model.exceptions import (JiraGetIssueException,
+                                       JiraGetWorkloadFromIssue)
 from src.main.model.issue import Issue
 from src.main.model.issues import Issues
+from src.main.model.worklog import Worklog
 from src.main.model.worklogs_issue import WorklogsForIssue
 from src.main.model.worklogs_user import WorklogsForUser
-from src.main.model.worklog import Worklog
 
 logger = logging.getLogger(__name__)
-
 
 class JiraAdapter:
     """Class to access to Jira"""
@@ -36,15 +39,16 @@ class JiraAdapter:
         response = requests.get(url,
                                 headers=self.__request_default_headers,
                                 auth=self.__auth,
-                                params=params)
+                                params=params,
+                                timeout=1000)
 
         if response.status_code == 200:
             issues = []
             for issue in response.json().get("issues", []):
                 issues.append(Issue(issue["id"], issue["key"], issue["fields"]["summary"]))
             return Issues(issues)
-        else:
-            raise JiraGetIssueException()
+
+        raise JiraGetIssueException()
 
     def get_issues_for_component(self, component_name: str) -> Issues:
         """Function to get issues associated to a component"""
@@ -59,13 +63,13 @@ class JiraAdapter:
         response = requests.get(url,
                                 headers=self.__request_default_headers,
                                 auth=self.__auth,
-                                params=params)
+                                params=params,
+                                timeout=1000)
 
         logger.debug("ISSUE => %s", response.json())
         if response.status_code == 200:
             return self.__map_issues_to_model(response.json())
-        else:
-            raise JiraGetIssueException()
+        raise JiraGetIssueException()
 
     def get_users_for_component(self, component_name: str) -> set[str]:
         """
@@ -76,12 +80,11 @@ class JiraAdapter:
         issues = self.get_issues_for_component(component_name)
 
         # Initialize empty set for users
-        users = set()
+        users = set(str)
 
-        # Get worklogs for each issue and extract unique usernames
         for issue in issues.issues:
             worklogs = self.get_worklogs_for_issue(issue.id)
-            users.update(worklog.user_email for worklog in worklogs)
+            users.update(worklog.user_email for worklog in worklogs.workloads)
 
         return users
 
@@ -91,32 +94,34 @@ class JiraAdapter:
         url = f"{self.__jira_url}/rest/api/3/issue/{issue_id}"
         response = requests.get(url,
                                 headers=self.__request_default_headers,
-                                auth=self.__auth)
+                                auth=self.__auth,
+                                timeout=1000)
         logger.debug("ISSUE DETAILS => %s", response.json())
         if response.status_code == 200:
             issue_dict = response.json()
             return Issue(issue_id, issue_dict["key"], issue_dict["fields"]["summary"])
-        else:
-            raise JiraGetIssueException()
+        raise JiraGetIssueException()
 
     def get_worklogs_for_issue(self, issue_key: str) -> WorklogsForIssue:
+        """Function to get worklogs for an issue"""
         url = f"{self.__jira_url}/rest/api/3/issue/{issue_key}/worklog"
         response = requests.get(url,
                                 headers=self.__request_default_headers,
-                                auth=self.__auth)
+                                auth=self.__auth,
+                                timeout=1000)
         logger.debug("WORKLOGS => %s", response.json())
         if response.status_code == 200:
             return WorklogsForIssue(issue_key, self.__map_workloads_to_model(response.json()))
-        else:
-            raise JiraGetWorkloadFromIssue()
+        raise JiraGetWorkloadFromIssue()
 
 
     def get_user_worklogs_for_issue(self, issue_key: str, username: str) -> WorklogsForUser:
+        """Function to get worklogs for an issue for a specific user"""
         issue_worklogs = self.get_worklogs_for_issue(issue_key)
         logger.debug("worklogs for issue %s => %s", issue_key, issue_worklogs)
         return WorklogsForUser(
             username,
-            [worklog for worklog in issue_worklogs if worklog.user_email == username])
+            [worklog for worklog in issue_worklogs.workloads if worklog.user_email == username])
 
     def __map_workloads_to_model(self, workloads_response: dict) -> list[Worklog]:
         """Map workloads in Workload model"""

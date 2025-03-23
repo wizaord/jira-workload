@@ -1,3 +1,6 @@
+"""
+Main entry to extract workload for a specific user
+"""
 import configparser
 import json
 import logging
@@ -25,7 +28,9 @@ def extract_workload_for_user(username: str):
 
     issues_for_user = jira_adapter.get_issues_where_user_has_worked_on_it(username)
 
-    logger.info("User %s has worked on issues: %s", username, json.dumps(asdict(issues_for_user), indent=2, default=str))
+    logger.info("User %s has worked on issues: %s", username,
+                json.dumps(asdict(issues_for_user), indent=2, default=str))
+
     user_global_worklogs = WorklogsForUser(username, [])
     for issue in issues_for_user.issues:
         logger.info("Fetching worklogs for issue %s", issue.key)

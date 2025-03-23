@@ -1,3 +1,6 @@
+"""
+This module contains the Issue class, which represents a Jira issue.
+"""
 from dataclasses import dataclass
 
 

@@ -1,8 +1,10 @@
+"""
+This module contains the class WorklogsForUser that represents the workloads for a user.
+"""
 from dataclasses import dataclass
-from datetime import datetime, date
+from datetime import date
 
 from src.main.model.worklog import Worklog
-
 
 
 @dataclass

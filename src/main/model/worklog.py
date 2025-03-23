@@ -1,3 +1,6 @@
+"""
+This module contains the class Worklog that represents a worklog in Jira.
+"""
 from dataclasses import dataclass
 from datetime import datetime
 

@@ -1,6 +1,8 @@
+"""
+This module is the main entry point of the program.
+"""
 import configparser
 import logging
-from datetime import date
 
 from src import ROOT_DIR
 from src.main.adapters.jira_adapter import JiraAdapter
@@ -33,16 +35,13 @@ def main():
         worklogs.extend(issue_worklogs)
     logger.info("Workloads from component %s: %s", jira_component_name, worklogs)
 
-    logger.info("La liste des issues pour le composant %s est %s", jira_component_name, worklogs.get_component_issues())
-    logger.info("La liste des worklogs pour le composant %s est %s", jira_component_name, worklogs.workloads)
+    logger.info("La liste des issues pour le composant %s est %s",
+                jira_component_name, worklogs.get_component_issues())
+    logger.info("La liste des worklogs pour le composant %s est %s",
+                jira_component_name, worklogs.workloads)
     for username in worklogs.get_usernames():
         user_workloads = worklogs.get_worklogs_for_user(username)
         logger.info("username : %s - %s", username, user_workloads.get_time_spent_group_by_day())
-
-        # user_workload_issues = user_workloads.get_issues()
-        # for issue in user_workload_issues:
-        #     user_workloads_issue = worklogs.get_workloads_for_issue(issue)
-        #     logger.info("User %s - issue %s - total timeSpent %s", username, issue, user_workloads_issue.get_total_time_spent())
 
     logger.info('End of the workload extraction')
 
