@@ -3,7 +3,7 @@ import logging
 from datetime import date
 
 from src import ROOT_DIR
-from src.main.adapters.jira import JiraAdapter
+from src.main.adapters.jira_adapter import JiraAdapter
 from src.main.model.worklogs_component import WorklogsForComponent
 
 # Global project configuration

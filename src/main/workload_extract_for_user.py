@@ -4,7 +4,7 @@ import logging
 from dataclasses import asdict
 
 from src import ROOT_DIR
-from src.main.adapters.jira import JiraAdapter
+from src.main.adapters.jira_adapter import JiraAdapter
 from src.main.model.worklogs_user import WorklogsForUser
 
 # Global project configuration
