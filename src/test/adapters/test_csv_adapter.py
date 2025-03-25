@@ -24,20 +24,21 @@ class TestCsvAdapter(unittest.TestCase):
     def test_writes_headers_to_csv(self):
         """Test that the adapter writes headers to the csv file"""
         headers = ['header1', 'header2', 'header3']
-        self.adapter.write(headers)
+        self.adapter.write(headers, [])
 
         with open(self.test_file, 'r') as csvfile:
             reader = csv.reader(csvfile)
-            self.assertEqual(next(reader), headers)
+            self.assertEqual(next(reader), ['header1;header2;header3'])
 
     def test_writes_empty_headers_to_csv(self):
         """Test that the adapter writes empty headers to the csv file"""
         headers = []
-        self.adapter.write(headers)
+        self.adapter.write(headers, [])
 
         with open(self.test_file, 'r') as csvfile:
             reader = csv.reader(csvfile)
             self.assertEqual(next(reader), headers)
+
 
 if __name__ == "__main__":
     unittest.main()
