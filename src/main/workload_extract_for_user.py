@@ -3,7 +3,7 @@ Main entry to extract workload for a specific user
 """
 import configparser
 import logging
-from datetime import date
+from datetime import date, timedelta
 
 from src import ROOT_DIR
 from src.main.adapters.csv_adapter import CsvAdapter
@@ -26,4 +26,8 @@ csv_adapter = CsvAdapter("workload.csv")
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     service = WorklogsForUserService(jira_adapter, csv_adapter)
-    service.extract_workloads_for_user_and_save_in_csv_file("c.guegnon@seiitra.com", date.today())
+
+    users = ["c.guegnon@seiitra.com", "d.simonazzi@seiitra.com"]
+    date_limit = date.today() - timedelta(weeks=1)
+
+    service.extract_workloads_for_user_and_save_in_csv_file(users, date_limit)

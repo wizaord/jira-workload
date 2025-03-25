@@ -34,15 +34,18 @@ class WorklogsForUserService:
         user_workloads.remove_worklogs_before_date(limit_date)
         return user_workloads
 
-    def extract_workloads_for_user_and_save_in_csv_file(self, user_email: str, limit_date: date):
-        user_workload = self.__extract_workload_for_user(user_email, limit_date)
+    def extract_workloads_for_user_and_save_in_csv_file(self, users_email: list[str], limit_date: date):
         headers = ["user_email", "date", "time_spent_in_minutes"]
-        worklogs_dict_list = [
-            {
-                'user_email': user_workload.username,
-                'date': worklog.date_started.date(),
-                'time_spent_in_minutes': worklog.time_spent_minutes
-            }
-            for worklog in user_workload.workloads
-        ]
+        worklogs_dict_list = []
+
+        for user_email in users_email:
+            user_workload = self.__extract_workload_for_user(user_email, limit_date)
+            for day, time_spent in user_workload.get_time_spent_group_by_day().items():
+                worklogs_dict_list.append(
+                    {
+                        'user_email': user_workload.username,
+                        'date': day,
+                        'time_spent_in_minutes': time_spent
+                    }
+        )
         self.csv_adapter.write(headers, worklogs_dict_list)
