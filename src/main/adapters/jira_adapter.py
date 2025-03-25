@@ -8,8 +8,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 from src.main.domain.model.exceptions import JiraGetIssueException, JiraGetWorkloadFromIssue
-from src.main.domain.model.issue import Issue
-from src.main.domain.model.issues import Issues
+from src.main.domain.model.issues import Issues, Issue
 from src.main.domain.model.worklog import Worklog
 from src.main.domain.model.worklogs_issue import WorklogsForIssue
 from src.main.domain.model.worklogs_user import WorklogsForUser
@@ -24,6 +23,46 @@ class JiraAdapter:
         self.__jira_url = "https://seiitra.atlassian.net"
         self.__auth = HTTPBasicAuth(username, api_token)
         self.__request_default_headers = {"Accept": "application/json"}
+
+    def get_technical_stories(self) -> Issues:
+        """Function to get technical stories"""
+        logger.info("Extract technical stories from JIRA")
+        jql = "project = ThetraReprise AND type = 'Technical Story'"
+        url = f"{self.__jira_url}/rest/api/3/search"
+        params = {
+            "jql": jql,
+            "fields": "key, summary, parent"
+        }
+        response = requests.get(url,
+                                headers=self.__request_default_headers,
+                                auth=self.__auth,
+                                params=params,
+                                timeout=1000)
+
+        if response.status_code == 200:
+            return self.__map_issues_to_model(response)
+
+        raise JiraGetIssueException()
+
+    def get_sub_issues_from_issue(self, issue_key: str) -> Issues:
+        """Function to get sub issues from a parent issue"""
+        logger.info("Extract sub issues from JIRA")
+        jql = f"parent = {issue_key}"
+        url = f"{self.__jira_url}/rest/api/3/search"
+        params = {
+            "jql": jql,
+            "fields": "key, summary, parent"
+        }
+        response = requests.get(url,
+                                headers=self.__request_default_headers,
+                                auth=self.__auth,
+                                params=params,
+                                timeout=1000)
+
+        if response.status_code == 200:
+            return self.__map_issues_to_model(response)
+
+        raise JiraGetIssueException
 
     def get_issues_where_user_has_worked_on_it(self, user_email: str) -> Issues:
         """Function to get issues associated to a user"""
@@ -42,10 +81,7 @@ class JiraAdapter:
                                 timeout=1000)
 
         if response.status_code == 200:
-            issues = []
-            for issue in response.json().get("issues", []):
-                issues.append(Issue(issue["id"], issue["key"], issue["fields"]["summary"]))
-            return Issues(issues)
+            return self.__map_issues_to_model(response)
 
         raise JiraGetIssueException()
 
@@ -67,7 +103,7 @@ class JiraAdapter:
 
         logger.debug("ISSUE => %s", response.json())
         if response.status_code == 200:
-            return self.__map_issues_to_model(response.json())
+            return self.__map_issues_to_model(response)
         raise JiraGetIssueException()
 
     def get_users_for_component(self, component_name: str) -> set[str]:
@@ -133,9 +169,14 @@ class JiraAdapter:
             issue_id=worklog["issueId"]
         ) for worklog in worklogs]
 
-    def __map_issues_to_model(self, issue_response: dict) -> Issues:
-        """Map issues in Issue model"""
+    def __map_issues_to_model(self, response):
         issues = []
-        for issue in issue_response.get("issues", []):
-            issues.append(self.get_issue_details(issue["id"]))
+        for issue in response.json().get("issues", []):
+
+            fields = issue["fields"] if issue.get("fields") else {}
+            parent_key = fields["parent"]["key"] if fields.get("parent") else None
+            title = fields["summary"] if fields.get("summary") else None
+            key = issue["key"] if issue.get("key") else None
+
+            issues.append(Issue(issue["id"], key, title, parent_key))
         return Issues(issues)

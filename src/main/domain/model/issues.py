@@ -4,8 +4,13 @@ This module contains the class that represents all issues in Jira.
 from dataclasses import dataclass
 from typing import Optional
 
-from src.main.domain.model.issue import Issue
-
+@dataclass
+class Issue:
+    """Class that represents a Jira issue"""
+    id: str
+    key: str
+    title: str
+    parent: str = None
 
 @dataclass
 class Issues:

@@ -17,6 +17,22 @@ class WorklogsForUserService:
         self.jira_adapter = jira_adapter
         self.csv_adapter = csv_adapter
 
+    def extract_workloads_group_by_user_and_date_in_csv_file(self, users_email: list[str], limit_date: date):
+        headers = ["user_email", "date", "time_spent_in_minutes"]
+        worklogs_dict_list = []
+
+        for user_email in users_email:
+            user_workload = self.__extract_workload_for_user(user_email, limit_date)
+            for day, time_spent in user_workload.get_time_spent_group_by_day().items():
+                worklogs_dict_list.append(
+                    {
+                        'user_email': user_workload.username,
+                        'date': day,
+                        'time_spent_in_minutes': time_spent
+                    }
+        )
+        self.csv_adapter.write(headers, worklogs_dict_list)
+
     def __extract_workload_for_user(self, username: str, limit_date: date) -> WorklogsForUser:
         """Main entry point of the program."""
         logger.info('Starting the workload extraction for user %s until %s', username, limit_date)
@@ -33,19 +49,3 @@ class WorklogsForUserService:
 
         user_workloads.remove_worklogs_before_date(limit_date)
         return user_workloads
-
-    def extract_workloads_for_user_and_save_in_csv_file(self, users_email: list[str], limit_date: date):
-        headers = ["user_email", "date", "time_spent_in_minutes"]
-        worklogs_dict_list = []
-
-        for user_email in users_email:
-            user_workload = self.__extract_workload_for_user(user_email, limit_date)
-            for day, time_spent in user_workload.get_time_spent_group_by_day().items():
-                worklogs_dict_list.append(
-                    {
-                        'user_email': user_workload.username,
-                        'date': day,
-                        'time_spent_in_minutes': time_spent
-                    }
-        )
-        self.csv_adapter.write(headers, worklogs_dict_list)

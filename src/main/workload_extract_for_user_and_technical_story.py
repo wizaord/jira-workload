@@ -8,6 +8,7 @@ from datetime import date, timedelta
 from src import ROOT_DIR
 from src.main.adapters.csv_adapter import CsvAdapter
 from src.main.adapters.jira_adapter import JiraAdapter
+from src.main.domain.WorkloadForTechnicalStory import WorklogsForTechnicalStory
 from src.main.domain.WorkloadForUserService import WorklogsForUserService
 
 # Global project configuration
@@ -25,9 +26,8 @@ csv_adapter = CsvAdapter("workload.csv")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    service = WorklogsForUserService(jira_adapter, csv_adapter)
+    service = WorklogsForTechnicalStory(jira_adapter, csv_adapter)
 
-    users = ["c.guegnon@seiitra.com", "d.simonazzi@seiitra.com"]
     date_limit = date.today() - timedelta(weeks=1)
 
-    service.extract_workloads_group_by_user_and_date_in_csv_file(users, date_limit)
+    service.extract_workloads_group_by_user_date_ts_in_csv_file(date_limit)
