@@ -6,7 +6,7 @@ import logging
 
 from src import ROOT_DIR
 from src.main.adapters.jira_adapter import JiraAdapter
-from src.main.model.worklogs_component import WorklogsForComponent
+from src.main.domain.model.worklogs_component import WorklogsForComponent
 
 # Global project configuration
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def main():
     for issue in jira_issues.issues:
         logger.info("Loading workload from issue %s", issue)
         issue_worklogs = jira_adapter.get_worklogs_for_issue(issue.id)
-        worklogs.extend(issue_worklogs)
+        worklogs.extend(issue_worklogs.workloads)
     logger.info("Workloads from component %s: %s", jira_component_name, worklogs)
 
     logger.info("La liste des issues pour le composant %s est %s",

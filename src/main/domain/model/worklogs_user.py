@@ -4,7 +4,7 @@ This module contains the class WorklogsForUser that represents the workloads for
 from dataclasses import dataclass
 from datetime import date
 
-from src.main.model.worklog import Worklog
+from src.main.domain.model.worklog import Worklog
 
 
 @dataclass

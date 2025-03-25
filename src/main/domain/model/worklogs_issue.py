@@ -3,7 +3,7 @@ This module contains the class WorklogsForIssue that represents the worklogs for
 """
 from dataclasses import dataclass
 
-from src.main.model.worklog import Worklog
+from src.main.domain.model.worklog import Worklog
 
 
 @dataclass

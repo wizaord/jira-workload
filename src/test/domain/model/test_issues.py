@@ -3,8 +3,8 @@ Test cases for the Issues class
 """
 import unittest
 
-from src.main.model.issue import Issue
-from src.main.model.issues import Issues
+from src.main.domain.model.issue import Issue
+from src.main.domain.model.issues import Issues
 
 
 class TestIssues(unittest.TestCase):

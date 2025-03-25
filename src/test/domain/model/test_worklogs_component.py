@@ -3,8 +3,8 @@ This module contains the tests for the WorklogsForComponent class.
 """
 import unittest
 
-from src.main.model.worklog import Worklog
-from src.main.model.worklogs_component import WorklogsForComponent
+from src.main.domain.model.worklog import Worklog
+from src.main.domain.model.worklogs_component import WorklogsForComponent
 
 
 class TestWorklogsComponent(unittest.TestCase):

@@ -7,13 +7,12 @@ from datetime import datetime
 import requests
 from requests.auth import HTTPBasicAuth
 
-from src.main.model.exceptions import (JiraGetIssueException,
-                                       JiraGetWorkloadFromIssue)
-from src.main.model.issue import Issue
-from src.main.model.issues import Issues
-from src.main.model.worklog import Worklog
-from src.main.model.worklogs_issue import WorklogsForIssue
-from src.main.model.worklogs_user import WorklogsForUser
+from src.main.domain.model.exceptions import JiraGetIssueException, JiraGetWorkloadFromIssue
+from src.main.domain.model.issue import Issue
+from src.main.domain.model.issues import Issues
+from src.main.domain.model.worklog import Worklog
+from src.main.domain.model.worklogs_issue import WorklogsForIssue
+from src.main.domain.model.worklogs_user import WorklogsForUser
 
 logger = logging.getLogger(__name__)
 

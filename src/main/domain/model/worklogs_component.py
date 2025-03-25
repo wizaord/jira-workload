@@ -3,9 +3,9 @@ This module contains the class that represents the workloads for a component.
 """
 from dataclasses import dataclass
 
-from src.main.model.worklog import Worklog
-from src.main.model.worklogs_issue import WorklogsForIssue
-from src.main.model.worklogs_user import WorklogsForUser
+from src.main.domain.model.worklog import Worklog
+from src.main.domain.model.worklogs_issue import WorklogsForIssue
+from src.main.domain.model.worklogs_user import WorklogsForUser
 
 
 @dataclass
