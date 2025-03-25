@@ -13,8 +13,10 @@ class CsvAdapter:
         """Constructor of the class"""
         self.file_path = file_path
 
-    def write(self, headers: list[str]):
+    def write(self, headers: list[str], rows: list[dict]):
         """Write the headers in the file"""
         with open(self.file_path, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=headers)
+            writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter=";")
             writer.writeheader()
+            for row in rows:
+                writer.writerow(row)

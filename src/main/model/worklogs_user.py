@@ -36,6 +36,10 @@ class WorklogsForUser:
         """Return the total time spent in minutes"""
         return sum([workload.time_spent_minutes for workload in self.workloads])
 
-    def append_worklogs(self, worklogs: list[Worklog]):
+    def append_worklogs(self, worklogs: 'WorklogsForUser'):
         """Append worklogs to the existing workloads"""
-        self.workloads.extend(worklogs)
+        self.workloads.extend(worklogs.workloads)
+
+    def remove_worklogs_before_date(self, limit_date: date):
+        """Remove worklogs before the given date"""
+        self.workloads = [workload for workload in self.workloads if workload.date_started.date() >= limit_date]

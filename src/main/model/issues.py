@@ -15,6 +15,10 @@ class Issues:
     def __init__(self, issues: list[Issue]):
         self.issues = issues
 
+    def count_issues(self) -> int:
+        """Return the number of issues"""
+        return len(self.issues)
+
     def get_issue_by_id(self, issue_id: str) -> Optional[Issue]:
         """Return the issue with the given id"""
         for issue in self.issues:
