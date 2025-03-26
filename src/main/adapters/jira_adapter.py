@@ -28,26 +28,27 @@ class JiraAdapter:
         """Function to get technical stories"""
         logger.info("Extract technical stories from JIRA")
         jql = "project = ThetraReprise AND type = 'Technical Story'"
-        url = f"{self.__jira_url}/rest/api/3/search"
-        params = {
-            "jql": jql,
-            "fields": "key, summary, parent"
-        }
-        response = requests.get(url,
-                                headers=self.__request_default_headers,
-                                auth=self.__auth,
-                                params=params,
-                                timeout=1000)
-
-        if response.status_code == 200:
-            return self.__map_issues_to_model(response)
-
-        raise JiraGetIssueException()
+        return self.__fetch_issues(jql)
 
     def get_sub_issues_from_issue(self, issue_key: str) -> Issues:
         """Function to get sub issues from a parent issue"""
         logger.info("Extract sub issues from JIRA")
         jql = f"parent = {issue_key}"
+        return self.__fetch_issues(jql)
+
+    def get_issues_where_user_has_worked_on_it(self, user_email: str) -> Issues:
+        """Function to get issues associated to a user"""
+        logger.info("Get issues ids from user %s", user_email)
+        jql = f"worklogAuthor = '{user_email}'"
+        return self.__fetch_issues(jql)
+
+    def get_issues_for_component(self, component_name: str) -> Issues:
+        """Function to get issues associated to a component"""
+        logger.info("Get issues ids from component %s", component_name)
+        jql = f"component = '{component_name}'"
+        return self.__fetch_issues(jql)
+
+    def __fetch_issues(self, jql: str) -> Issues:
         url = f"{self.__jira_url}/rest/api/3/search"
         params = {
             "jql": jql,
@@ -62,48 +63,6 @@ class JiraAdapter:
         if response.status_code == 200:
             return self.__map_issues_to_model(response)
 
-        raise JiraGetIssueException
-
-    def get_issues_where_user_has_worked_on_it(self, user_email: str) -> Issues:
-        """Function to get issues associated to a user"""
-        logger.info("Get issues ids from user %s", user_email)
-        jql = f"worklogAuthor = '{user_email}'"
-        url = f"{self.__jira_url}/rest/api/3/search"
-        params = {
-            "jql": jql,
-            "fields": "key, summary, worklog"
-        }
-
-        response = requests.get(url,
-                                headers=self.__request_default_headers,
-                                auth=self.__auth,
-                                params=params,
-                                timeout=1000)
-
-        if response.status_code == 200:
-            return self.__map_issues_to_model(response)
-
-        raise JiraGetIssueException()
-
-    def get_issues_for_component(self, component_name: str) -> Issues:
-        """Function to get issues associated to a component"""
-        logger.info("Get issues ids from component %s", component_name)
-        jql = f"component = '{component_name}'"
-        url = f"{self.__jira_url}/rest/api/3/search"
-        params = {
-            "jql": jql,
-            "fields": "key"
-        }
-
-        response = requests.get(url,
-                                headers=self.__request_default_headers,
-                                auth=self.__auth,
-                                params=params,
-                                timeout=1000)
-
-        logger.debug("ISSUE => %s", response.json())
-        if response.status_code == 200:
-            return self.__map_issues_to_model(response)
         raise JiraGetIssueException()
 
     def get_users_for_component(self, component_name: str) -> set[str]:
