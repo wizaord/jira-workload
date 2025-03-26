@@ -18,7 +18,5 @@ class WorklogsForTechnicalStory:
 
     def extract_workloads_group_by_user_date_ts_in_csv_file(self, date_limit: date):
         technical_stories = self.jira_adapter.get_technical_stories()
-        for technical_story in technical_stories.issues:
-            sub_issues = self.jira_adapter.get_sub_issues_from_issue(technical_story.key)
         logger.info("technical_stories %s", technical_stories)
 

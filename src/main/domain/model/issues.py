@@ -10,11 +10,13 @@ class Issue:
     id: str
     key: str
     title: str
-    parent: str = None
+    parent_key: str = None
+    parent: 'Issue' = None
+    sub_issues: 'Issues' = None
 
 @dataclass
 class Issues:
-    """Class that represents all issues in Jira"""
+    """Class that represents a group of issues in Jira"""
     issues: list[Issue]
 
     def __init__(self, issues: list[Issue]):

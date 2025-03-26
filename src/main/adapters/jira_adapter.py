@@ -1,6 +1,7 @@
 """
 Adapter to access to Jira
 """
+import json
 import logging
 from datetime import datetime
 
@@ -28,11 +29,11 @@ class JiraAdapter:
         """Function to get technical stories"""
         logger.info("Extract technical stories from JIRA")
         jql = "project = ThetraReprise AND type = 'Technical Story'"
-        return self.__fetch_issues(jql)
+        return self.__fetch_issues(jql, True, True)
 
     def get_sub_issues_from_issue(self, issue_key: str) -> Issues:
         """Function to get sub issues from a parent issue"""
-        logger.info("Extract sub issues from JIRA")
+        logger.info("Extract sub issues from issue %s", issue_key)
         jql = f"parent = {issue_key}"
         return self.__fetch_issues(jql)
 
@@ -48,7 +49,7 @@ class JiraAdapter:
         jql = f"component = '{component_name}'"
         return self.__fetch_issues(jql)
 
-    def __fetch_issues(self, jql: str) -> Issues:
+    def __fetch_issues(self, jql: str, fetch_sub_issues: bool = False, fetch_parent: bool = False) -> Issues:
         url = f"{self.__jira_url}/rest/api/3/search"
         params = {
             "jql": jql,
@@ -61,7 +62,15 @@ class JiraAdapter:
                                 timeout=1000)
 
         if response.status_code == 200:
-            return self.__map_issues_to_model(response)
+            issues = self.__map_issues_to_model(response)
+            if fetch_sub_issues:
+                for issue in issues.issues:
+                    issue.sub_issues = self.get_sub_issues_from_issue(issue.key)
+            if fetch_parent:
+                for issue in issues.issues:
+                    if issue.parent_key is not None:
+                        issue.parent = self.get_issue_details(issue.parent_key)
+            return issues
 
         raise JiraGetIssueException()
 
@@ -90,10 +99,10 @@ class JiraAdapter:
                                 headers=self.__request_default_headers,
                                 auth=self.__auth,
                                 timeout=1000)
-        logger.debug("ISSUE DETAILS => %s", response.json())
+        logger.info("Get issue details for issue %s", response.json())
         if response.status_code == 200:
-            issue_dict = response.json()
-            return Issue(issue_id, issue_dict["key"], issue_dict["fields"]["summary"])
+            return self.__map_issue_to_model(response.json())
+
         raise JiraGetIssueException()
 
     def get_worklogs_for_issue(self, issue_key: str) -> WorklogsForIssue:
@@ -131,11 +140,16 @@ class JiraAdapter:
     def __map_issues_to_model(self, response):
         issues = []
         for issue in response.json().get("issues", []):
-
-            fields = issue["fields"] if issue.get("fields") else {}
-            parent_key = fields["parent"]["key"] if fields.get("parent") else None
-            title = fields["summary"] if fields.get("summary") else None
-            key = issue["key"] if issue.get("key") else None
-
-            issues.append(Issue(issue["id"], key, title, parent_key))
+            issues.append(self.__map_issue_to_model(issue))
         return Issues(issues)
+
+    def __map_issue_to_model(self, issue):
+        fields = issue["fields"] if issue.get("fields") else {}
+        parent_key = fields["parent"]["key"] if fields.get("parent") else None
+        title = fields["summary"] if fields.get("summary") else None
+        key = issue["key"] if issue.get("key") else None
+
+        return Issue(id = issue["id"],
+                     key = key,
+                     title = title,
+                     parent_key = parent_key)
