@@ -51,6 +51,7 @@ class JiraAdapter:
 
     def __fetch_issues(self, jql: str, fetch_sub_issues: bool = False, fetch_parent: bool = False) -> Issues:
         url = f"{self.__jira_url}/rest/api/3/search"
+        #TODO: Add pagination
         params = {
             "jql": jql,
             "fields": "key, summary, parent, worklog",
