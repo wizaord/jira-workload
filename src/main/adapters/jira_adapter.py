@@ -28,7 +28,7 @@ class JiraAdapter:
     def get_technical_stories(self) -> Issues:
         """Function to get technical stories"""
         logger.info("Extract technical stories from JIRA")
-        jql = "project = ThetraReprise AND type = 'Technical Story'"
+        jql = "project = ThetraReprise AND type = 'Technical Story' AND component IN (EquipeRose, EquipeOrange, EquipeVerte)"
         return self.__fetch_issues(jql, True, True)
 
     def get_sub_issues_from_issue(self, issue_key: str) -> Issues:
@@ -53,7 +53,9 @@ class JiraAdapter:
         url = f"{self.__jira_url}/rest/api/3/search"
         params = {
             "jql": jql,
-            "fields": "key, summary, parent"
+            "fields": "key, summary, parent, worklog",
+            "maxResults": 100,
+            # "startAt": 100
         }
         response = requests.get(url,
                                 headers=self.__request_default_headers,
@@ -99,7 +101,7 @@ class JiraAdapter:
                                 headers=self.__request_default_headers,
                                 auth=self.__auth,
                                 timeout=1000)
-        logger.info("Get issue details for issue %s", response.json())
+        logger.info("Get issue details for issue %s", issue_id)
         if response.status_code == 200:
             return self.__map_issue_to_model(response.json())
 
@@ -126,17 +128,6 @@ class JiraAdapter:
             username,
             [worklog for worklog in issue_worklogs.workloads if worklog.user_email == username])
 
-    def __map_workloads_to_model(self, workloads_response: dict) -> list[Worklog]:
-        """Map workloads in Workload model"""
-        worklogs = workloads_response.get("worklogs", [])
-        return [Worklog(
-            id=worklog["id"],
-            user_email=worklog["author"]["emailAddress"],
-            date_started=datetime.strptime(worklog["started"], "%Y-%m-%dT%H:%M:%S.%f%z"),
-            time_spent_minutes=worklog["timeSpentSeconds"] / 60,
-            issue_id=worklog["issueId"]
-        ) for worklog in worklogs]
-
     def __map_issues_to_model(self, response):
         issues = []
         for issue in response.json().get("issues", []):
@@ -148,8 +139,21 @@ class JiraAdapter:
         parent_key = fields["parent"]["key"] if fields.get("parent") else None
         title = fields["summary"] if fields.get("summary") else None
         key = issue["key"] if issue.get("key") else None
+        worklogs = self.__map_workloads_to_model(fields.get("worklog", {}))
 
         return Issue(id = issue["id"],
                      key = key,
                      title = title,
+                     worklogs= worklogs,
                      parent_key = parent_key)
+
+    def __map_workloads_to_model(self, workloads_response: dict) -> list[Worklog]:
+        """Map workloads in Workload model"""
+        worklogs = workloads_response.get("worklogs", [])
+        return [Worklog(
+            id=worklog["id"],
+            user_email=worklog["author"]["emailAddress"],
+            date_started=datetime.strptime(worklog["started"], "%Y-%m-%dT%H:%M:%S.%f%z"),
+            time_spent_minutes=worklog["timeSpentSeconds"] / 60,
+            issue_id=worklog["issueId"]
+        ) for worklog in worklogs]

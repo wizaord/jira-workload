@@ -41,11 +41,6 @@ class WorklogsForUserService:
 
         logger.info("User %s has worked on %d issues", username, issues_for_user.count_issues())
 
-        user_workloads = WorklogsForUser(username, [])
-        for issue in issues_for_user.issues:
-            logger.info("Fetching worklogs for issue %s", issue.key)
-            issue_workloads = self.jira_adapter.get_user_worklogs_for_issue(issue.id, username)
-            user_workloads.append_worklogs(issue_workloads)
-
+        user_workloads = WorklogsForUser(username, issues_for_user.get_all_worklogs())
         user_workloads.remove_worklogs_before_date(limit_date)
         return user_workloads

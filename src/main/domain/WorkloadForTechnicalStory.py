@@ -1,6 +1,7 @@
 """
 This class is responsible for managing the worklogs for a technical story.
 """
+import json
 import logging
 from datetime import date
 
@@ -20,3 +21,4 @@ class WorklogsForTechnicalStory:
         technical_stories = self.jira_adapter.get_technical_stories()
         logger.info("technical_stories %s", technical_stories)
 
+        logger.info("%s", technical_stories.get_all_worklogs())
