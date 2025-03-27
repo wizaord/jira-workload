@@ -1,7 +1,6 @@
 """
 Adapter to access to Jira
 """
-import json
 import logging
 from datetime import datetime
 
@@ -15,6 +14,7 @@ from src.main.domain.model.worklogs_issue import WorklogsForIssue
 from src.main.domain.model.worklogs_user import WorklogsForUser
 
 logger = logging.getLogger(__name__)
+
 
 class JiraAdapter:
     """Class to access to Jira"""
@@ -51,7 +51,7 @@ class JiraAdapter:
 
     def __fetch_issues(self, jql: str, fetch_sub_issues: bool = False, fetch_parent: bool = False) -> Issues:
         url = f"{self.__jira_url}/rest/api/3/search"
-        #TODO: Add pagination
+        # TODO: Add pagination
         params = {
             "jql": jql,
             "fields": "key, summary, parent, worklog",
@@ -70,9 +70,15 @@ class JiraAdapter:
                 for issue in issues.issues:
                     issue.sub_issues = self.get_sub_issues_from_issue(issue.key)
             if fetch_parent:
+                parents_issue_already_retreived = Issues([])
                 for issue in issues.issues:
                     if issue.parent_key is not None:
-                        issue.parent = self.get_issue_details(issue.parent_key)
+                        parent_issue = parents_issue_already_retreived.get_issue_by_key(issue.parent_key)
+                        if parent_issue is not None:
+                            issue.parent = parent_issue
+                        else:
+                            issue.parent = self.get_issue_details(issue.parent_key)
+                            parents_issue_already_retreived.issues.append(issue.parent)
             return issues
 
         raise JiraGetIssueException()
@@ -93,7 +99,6 @@ class JiraAdapter:
             users.update(worklog.user_email for worklog in worklogs.workloads)
 
         return users
-
 
     def get_issue_details(self, issue_id: str) -> Issue:
         """Function to get issue details"""
@@ -120,7 +125,6 @@ class JiraAdapter:
             return WorklogsForIssue(issue_key, self.__map_workloads_to_model(response.json()))
         raise JiraGetWorkloadFromIssue()
 
-
     def get_user_worklogs_for_issue(self, issue_key: str, username: str) -> WorklogsForUser:
         """Function to get worklogs for an issue for a specific user"""
         issue_worklogs = self.get_worklogs_for_issue(issue_key)
@@ -140,13 +144,13 @@ class JiraAdapter:
         parent_key = fields["parent"]["key"] if fields.get("parent") else None
         title = fields["summary"] if fields.get("summary") else None
         key = issue["key"] if issue.get("key") else None
-        worklogs = self.__map_workloads_to_model(fields.get("worklog", {}))
+        worklogs = WorklogsForIssue(issue["id"], self.__map_workloads_to_model(fields.get("worklog", {})))
 
-        return Issue(id = issue["id"],
-                     key = key,
-                     title = title,
-                     worklogs= worklogs,
-                     parent_key = parent_key)
+        return Issue(id=issue["id"],
+                     key=key,
+                     title=title,
+                     worklogs_for_issue=worklogs,
+                     parent_key=parent_key)
 
     def __map_workloads_to_model(self, workloads_response: dict) -> list[Worklog]:
         """Map workloads in Workload model"""

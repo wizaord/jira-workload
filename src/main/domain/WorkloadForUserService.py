@@ -41,6 +41,6 @@ class WorklogsForUserService:
 
         logger.info("User %s has worked on %d issues", username, issues_for_user.count_issues())
 
-        user_workloads = WorklogsForUser(username, issues_for_user.get_all_worklogs())
+        user_workloads = WorklogsForUser(username, issues_for_user.get_worklogs_from_all_issues_and_sub_issues())
         user_workloads.remove_worklogs_before_date(limit_date)
         return user_workloads
