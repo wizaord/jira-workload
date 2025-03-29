@@ -87,3 +87,8 @@ class Issues:
             if issue.key == parent_key:
                 return issue
         return None
+
+    def append(self, issues: 'Issues') -> 'Issues':
+        """Append the issues to the current issues"""
+        self.issues.extend(issues.issues)
+        return self

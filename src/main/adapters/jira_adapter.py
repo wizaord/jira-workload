@@ -49,14 +49,15 @@ class JiraAdapter:
         jql = f"component = '{component_name}'"
         return self.__fetch_issues(jql)
 
-    def __fetch_issues(self, jql: str, fetch_sub_issues: bool = False, fetch_parent: bool = False) -> Issues:
+    def __fetch_issues(self, jql: str, fetch_sub_issues: bool = False, fetch_parent: bool = False, start_at: int = 0) -> Issues:
         url = f"{self.__jira_url}/rest/api/3/search"
         # TODO: Add pagination
+        # convert start_at to int
         params = {
             "jql": jql,
             "fields": "key, summary, parent, worklog",
-            "maxResults": 100,
-            # "startAt": 100
+            "maxResults": 1000,
+            "startAt": start_at,
         }
         response = requests.get(url,
                                 headers=self.__request_default_headers,
@@ -64,7 +65,10 @@ class JiraAdapter:
                                 params=params,
                                 timeout=1000)
 
+
         if response.status_code == 200:
+            total_issues = response.json().get("total", 0)
+            nb_issues_retreived = start_at + response.json().get("maxResults", 0)
             issues = self.__map_issues_to_model(response)
             if fetch_sub_issues:
                 for issue in issues.issues:
@@ -79,7 +83,14 @@ class JiraAdapter:
                         else:
                             issue.parent = self.get_issue_details(issue.parent_key)
                             parents_issue_already_retreived.issues.append(issue.parent)
+
+            # Pagination
+            if nb_issues_retreived < total_issues:
+                logger.info("Pagination for JIRA")
+                issues.append(self.__fetch_issues(jql, fetch_sub_issues, fetch_parent, nb_issues_retreived))
+
             return issues
+
 
         raise JiraGetIssueException()
 
@@ -133,7 +144,7 @@ class JiraAdapter:
             username,
             [worklog for worklog in issue_worklogs.workloads if worklog.user_email == username])
 
-    def __map_issues_to_model(self, response):
+    def __map_issues_to_model(self, response) -> Issues:
         issues = []
         for issue in response.json().get("issues", []):
             issues.append(self.__map_issue_to_model(issue))
