@@ -115,11 +115,11 @@ class JiraChachouExporter(QMainWindow):
         btn3.clicked.connect(lambda: self.run_in_thread(workload_extract_for_user_and_technical_story.main))
         layout.addWidget(btn3)
         
-        # --- Ajout du bouton Stop ---
-        self.btn_stop = QPushButton("Stop")
-        self.btn_stop.clicked.connect(self.stop_current_thread)
-        self.btn_stop.setEnabled(False)  # Désactivé par défaut
-        layout.addWidget(self.btn_stop)
+        # --- Suppression du bouton Stop ---
+        # self.btn_stop = QPushButton("Stop")
+        # self.btn_stop.clicked.connect(self.stop_current_thread)
+        # self.btn_stop.setEnabled(False)  # Désactivé par défaut
+        # layout.addWidget(self.btn_stop)
         
         # Create a text area to display logs
         self.log_view = QPlainTextEdit()
@@ -209,10 +209,9 @@ class JiraChachouExporter(QMainWindow):
             
         # Désactiver les boutons pendant l'exécution
         for btn in self.findChildren(QPushButton):
-            if btn != self.btn_stop:  # Ne pas désactiver le bouton Stop
-                btn.setEnabled(False)
+            btn.setEnabled(False)
         
-        self.btn_stop.setEnabled(True)  # Activer le bouton Stop
+        # self.btn_stop.setEnabled(True)  # Activer le bouton Stop
         
         # Nettoyer les threads terminés
         self._cleanup_finished_threads()
@@ -232,10 +231,8 @@ class JiraChachouExporter(QMainWindow):
     def on_thread_finished(self):
         # Réactiver les boutons à la fin de l'exécution
         for btn in self.findChildren(QPushButton):
-            if btn != self.btn_stop:
-                btn.setEnabled(True)
+            btn.setEnabled(True)
         
-        self.btn_stop.setEnabled(False)  # Désactiver le bouton Stop
         logging.info("Opération terminée.")
     
     def on_thread_error(self, error_msg):
@@ -283,3 +280,4 @@ if __name__ == "__main__":
     sys.excepthook = exception_hook
     
     sys.exit(app.exec_())
+
