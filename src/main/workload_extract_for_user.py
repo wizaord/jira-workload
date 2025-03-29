@@ -23,11 +23,14 @@ __jira_api_token = config['JIRA']['Api_token']
 jira_adapter = JiraAdapter(__jira_username, __jira_api_token)
 csv_adapter = CsvAdapter("workload.csv")
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    service = WorklogsForUserService(jira_adapter, csv_adapter)
 
+def main():
+    service = WorklogsForUserService(jira_adapter, csv_adapter)
     users = ["c.guegnon@seiitra.com", "d.simonazzi@seiitra.com"]
     date_limit = date.today() - timedelta(weeks=1)
-
     service.extract_workloads_group_by_user_and_date_in_csv_file(users, date_limit)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    main()
