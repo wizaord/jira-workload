@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: workload_extract.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main/workload_extract.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {"PYTHONPATH": "${workspaceFolder}"}
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "/usr/bin/env python3",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.autoComplete.extraPaths": ["./src"],
+    "python.analysis.extraPaths": ["./src"]
+}
