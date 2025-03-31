@@ -16,8 +16,10 @@ fi
 source .venv/bin/activate
 pip install -r requirements.txt
 
+export PYTHONPATH="$(pwd):$PYTHONPATH"
+
 # Exécutez le script Python
 echo "Exécution du script Python window.py..."
-python3 -m src.main.window.py
+python3 src/main/window.py
 
 echo "Script Python terminé."
