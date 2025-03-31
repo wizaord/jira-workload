@@ -51,7 +51,6 @@ class JiraAdapter:
 
     def __fetch_issues(self, jql: str, fetch_sub_issues: bool = False, fetch_parent: bool = False, start_at: int = 0) -> Issues:
         url = f"{self.__jira_url}/rest/api/3/search"
-        # TODO: Add pagination
         # convert start_at to int
         params = {
             "jql": jql,
@@ -91,7 +90,8 @@ class JiraAdapter:
 
             return issues
 
-
+        logger.error("Error while fetching issues from JIRA: %s", response.status_code)
+        logger.error("Error message: %s", response.text)
         raise JiraGetIssueException()
 
     def get_users_for_component(self, component_name: str) -> set[str]:

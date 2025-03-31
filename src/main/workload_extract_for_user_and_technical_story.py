@@ -21,7 +21,10 @@ __jira_api_token = config['JIRA']['Api_token']
 
 # Factory
 jira_adapter = JiraAdapter(__jira_username, __jira_api_token)
-csv_adapter = CsvAdapter("workload.csv")
+
+today = date.today()
+csv_file_name = f"workload_user_epic_ts_day_{today.strftime('%Y-%m-%d')}.csv"
+csv_adapter = CsvAdapter(csv_file_name)
 
 
 def main():
