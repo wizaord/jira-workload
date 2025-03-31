@@ -24,7 +24,7 @@ class WorklogsForTechnicalStory:
 
     def __save_users_with_worklogs_in_csv_file(self, technical_stories: Issues):
         users_with_worklogs = technical_stories.get_all_distinct_worklogs_user_emails()
-        headers = ["user_email", "epic", "technical story", "day", "time_spent_in_minutes", "time_spent_in_hours"]
+        headers = ["user_email", "epic", "epic_id", "technical story", "day", "time_spent_in_minutes", "time_spent_in_hours"]
         csv_content = []
 
         for user_email in users_with_worklogs:
@@ -37,6 +37,7 @@ class WorklogsForTechnicalStory:
                     csv_content.append({
                         'user_email': user_email,
                         'epic': technical_story.parent.title,
+                        'epic_id': technical_story.parent.key,
                         'technical story': technical_story.title,
                         'day': day,
                         'time_spent_in_minutes': time_spent,
