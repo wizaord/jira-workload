@@ -7,3 +7,4 @@ pytest  # test unitaire
 ## Code dependencies
 requests>=2.32  # requête HTTP
 types-requests>=2.32  # typage de requête HTTP
+PyQt5>=5.15.11
