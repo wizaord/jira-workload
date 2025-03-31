@@ -2,6 +2,7 @@
 Adapter to access to Jira
 """
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 import requests
@@ -69,9 +70,24 @@ class JiraAdapter:
             total_issues = response.json().get("total", 0)
             nb_issues_retreived = start_at + response.json().get("maxResults", 0)
             issues = self.__map_issues_to_model(response)
-            if fetch_sub_issues:
-                for issue in issues.issues:
-                    issue.sub_issues = self.get_sub_issues_from_issue(issue.key)
+
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                # Créer un dictionnaire de futures
+                future_to_issue = {
+                    executor.submit(self.get_sub_issues_from_issue, issue.key): issue
+                    for issue in issues.issues
+                }
+
+                # Traiter les résultats au fur et à mesure qu'ils sont terminés
+                for future in as_completed(future_to_issue):
+                    issue = future_to_issue[future]
+                    try:
+                        sub_issues = future.result()
+                        issue.sub_issues = sub_issues
+                    except Exception as exc:
+                        logger.error("Une erreur est survenue lors de la récupération des sous-problèmes pour %s: %s", issue.key, exc)
+                        issue.sub_issues = Issues([])  # Initialiser avec une liste vide en cas d'erreur
+
             if fetch_parent:
                 parents_issue_already_retreived = Issues([])
                 for issue in issues.issues:
