@@ -2,12 +2,14 @@
 This module contains the class that represents all issues in Jira.
 """
 import copy
+import logging
 from dataclasses import dataclass
 from typing import Optional
 
 from src.main.domain.model.worklog import Worklog
 from src.main.domain.model.worklogs_issue import WorklogsForIssue
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Issue:
@@ -23,6 +25,7 @@ class Issue:
     def get_worklogs_from_issue_and_sub_issues(self) -> WorklogsForIssue:
         """Return the worklogs for the issue and its sub-issues"""
         new_worklogs_for_issue = copy.deepcopy(self.worklogs_for_issue)
+        logger.info("worklogs for issue %s => %s", self.key, new_worklogs_for_issue)
         if self.sub_issues:
             for sub_issue in self.sub_issues.issues:
                 new_worklogs_for_issue.extend(sub_issue.worklogs_for_issue.workloads)
@@ -36,6 +39,9 @@ class Issue:
         worklogs_filtered = self.worklogs_for_issue.filter_for_user(user_email)
         if sub_issues_filtered is None and worklogs_filtered is None:
             return None
+        # None workloads should be None. Create with empty value if necessary
+        if worklogs_filtered is None:
+            worklogs_filtered = WorklogsForIssue(self.id, [])
         return Issue(self.id, self.key, self.title, worklogs_filtered, self.parent_key, self.parent, sub_issues_filtered)
 
 

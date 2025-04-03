@@ -28,8 +28,10 @@ class WorklogsForTechnicalStory:
         csv_content = []
 
         for user_email in users_with_worklogs:
+            logger.info("calcul pour le user <%s>", user_email)
             technical_story_for_user = technical_stories.filter_for_user(user_email)
             for technical_story in technical_story_for_user.issues:
+                logger.info("calcul pour le technical story <%s>", technical_story.title)
                 spent_time_on_issue = technical_story.get_worklogs_from_issue_and_sub_issues().get_spent_time_group_by_day()
                 for day, time_spent in spent_time_on_issue.items():
                     logger.info("user <%s> - Parent <%s> - TS <%s> - day <%s> - time_spent <%s>", user_email,
