@@ -29,7 +29,7 @@ class JiraAdapter:
     def get_technical_stories(self) -> Issues:
         """Function to get technical stories"""
         logger.info("Extract technical stories from JIRA")
-        jql = "project = ThetraReprise AND type = 'Technical Story' AND component IN (EquipeRose, EquipeOrange, EquipeVerte)"
+        jql = "project = ThetraReprise AND type = 'Technical Story' AND component IN (EquipeRose, EquipeOrange, EquipeVerte, EquipeTransverse)"
         return self.__fetch_issues(jql, True, True)
 
     def get_sub_issues_from_issue(self, issue_key: str) -> Issues:
