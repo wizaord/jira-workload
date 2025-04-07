@@ -19,4 +19,6 @@ class CsvAdapter:
             writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter=";")
             writer.writeheader()
             for row in rows:
-                writer.writerow(row)
+                # Convertir les nombres au format XX.XX en XX,XX
+                formatted_row = {k: (str(v).replace('.', ',') if isinstance(v, (int, float)) else v) for k, v in row.items()}
+                writer.writerow(formatted_row)
