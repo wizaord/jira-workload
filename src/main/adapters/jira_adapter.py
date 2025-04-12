@@ -41,7 +41,7 @@ class JiraAdapter:
     def get_issues_where_user_has_worked_on_it(self, user_email: str) -> Issues:
         """Function to get issues associated to a user"""
         logger.info("Get issues ids from user %s", user_email)
-        jql = f"worklogAuthor = '{user_email}'"
+        jql = f"project = ThetraReprise AND worklogAuthor = '{user_email}'"
         return self.__fetch_issues(jql)
 
     def get_issues_for_component(self, component_name: str) -> Issues:
@@ -56,14 +56,14 @@ class JiraAdapter:
         params = {
             "jql": jql,
             "fields": "key, summary, parent, worklog",
-            "maxResults": 1000,
+            "maxResults": 100,
             "startAt": start_at,
         }
         response = requests.get(url,
                                 headers=self.__request_default_headers,
                                 auth=self.__auth,
                                 params=params,
-                                timeout=1000)
+                                timeout=2000)
 
 
         if response.status_code == 200:

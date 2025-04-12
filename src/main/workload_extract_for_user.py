@@ -8,7 +8,7 @@ from datetime import date, timedelta
 from src import ROOT_DIR
 from src.main.adapters.csv_adapter import CsvAdapter
 from src.main.adapters.jira_adapter import JiraAdapter
-from src.main.domain.WorkloadForUserService import WorklogsForUserService
+from src.main.domain.WorkloadForTechnicalStory import WorklogsForTechnicalStory
 
 # Global project configuration
 logger = logging.getLogger(__name__)
@@ -24,12 +24,18 @@ jira_adapter = JiraAdapter(__jira_username, __jira_api_token)
 csv_adapter = CsvAdapter("workload.csv")
 
 
-def main():
-    service = WorklogsForUserService(jira_adapter, csv_adapter)
-    users = ["c.guegnon@seiitra.com", "d.simonazzi@seiitra.com"]
-    date_limit = date.today() - timedelta(weeks=1)
-    service.extract_workloads_group_by_user_and_date_in_csv_file(users, date_limit)
+def main(user=None):
+    if user is None:
+        raise ValueError("Le paramètre 'user' ne peut pas être None.")
+        # Create the CSV file name with the current date
+    today = date.today()
+    csv_file_name = f"workload_user_{user}_epic_ts_day_{today.strftime('%Y-%m-%d')}.csv"
+    csv_adapter = CsvAdapter(csv_file_name)
 
+
+    service = WorklogsForTechnicalStory(jira_adapter, csv_adapter)
+    date_limit = date.today() - timedelta(weeks=2)
+    service.extract_workloads_group_by_user_date_ts_in_csv_file(user, date_limit)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
