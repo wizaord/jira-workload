@@ -112,8 +112,7 @@ class JiraChachouExporter(QMainWindow):
         # Charger la liste des utilisateurs depuis la configuration
         user_list = self.config.get('JIRA', 'liste_utilisateurs', fallback="").split(',')
         user_list = [user.strip() for user in user_list if user.strip()]  # Nettoyer les espaces
-        logging.info("Liste des utilisateurs chargée: %s", user_list)
-        
+
         # Ajout d'un layout horizontal pour le second bouton et la select box
         btn_select_layout = QHBoxLayout()
 
@@ -189,6 +188,7 @@ class JiraChachouExporter(QMainWindow):
         self.logger = setup_logging(self.log_view, self.log_signaler)
         self.change_log_level(self.log_level_combo.currentText())  # Appliquer le niveau de log initial
         logging.info("Log system initialized.")
+        logging.info("Liste des utilisateurs chargée: %s", user_list)
         logging.info("La fenêtre peut maintenant être redimensionnée.")
 
     def append_log(self, message):
