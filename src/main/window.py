@@ -12,7 +12,11 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout,
 # Import the modules containing the functions to call.
 import workload_extract_for_user
 import workload_extract_for_user_and_technical_story
+from src import ROOT_DIR
 
+config = configparser.ConfigParser()
+config.read(ROOT_DIR + '/configuration.ini')
+liste_utilisateurs = config['JIRA']['liste_utilisateurs']
 
 class LogSignaler(QObject):
     """Classe pour émettre des signaux de log de façon thread-safe"""
@@ -110,7 +114,7 @@ class JiraChachouExporter(QMainWindow):
         layout.addWidget(btn1)
 
         # Charger la liste des utilisateurs depuis la configuration
-        user_list = self.config.get('JIRA', 'liste_utilisateurs', fallback="").split(',')
+        user_list = liste_utilisateurs.split(",")
         user_list = [user.strip() for user in user_list if user.strip()]  # Nettoyer les espaces
 
         # Ajout d'un layout horizontal pour le second bouton et la select box
