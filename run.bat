@@ -9,7 +9,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 python -m venv .venv
-.venv\Scripts\activate
+CALL .venv\Scripts\activate
 
 REM Installez les dépendances
 pip install -r requirements.txt
