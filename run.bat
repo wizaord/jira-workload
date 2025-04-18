@@ -8,14 +8,8 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B 1
 )
 
-REM Vérifiez si venv est disponible
-python -m venv --help >nul 2>nul
-IF %ERRORLEVEL% NEQ 0 (
-    python -m venv .venv
-)
-
-REM Activez l'environnement virtuel
-CALL .venv\Scripts\activate.bat
+python -m venv .venv
+.venv\Scripts\activate
 
 REM Installez les dépendances
 pip install -r requirements.txt
