@@ -11,4 +11,3 @@ PyQt5>=5.15.11
 
 ## Package dependencies
 pyinstaller
-π
