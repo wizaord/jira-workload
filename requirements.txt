@@ -8,3 +8,6 @@ pytest  # test unitaire
 requests>=2.32  # requête HTTP
 types-requests>=2.32  # typage de requête HTTP
 PyQt5>=5.15.11
+
+## Package dependencies
+pyinstaller
