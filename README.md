@@ -34,3 +34,11 @@ python3 src/main/window.py
 ```bash
 python src/main/window.py
 ```
+
+## Bonus : Créer un exécutable
+### Windows
+
+```bash
+pyinstaller --onefile --windowed src/main/window.py
+```
+
