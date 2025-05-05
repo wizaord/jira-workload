@@ -65,7 +65,6 @@ class JiraAdapter:
                                 params=params,
                                 timeout=2000)
 
-
         if response.status_code == 200:
             total_issues = response.json().get("total", 0)
             nb_issues_retreived = start_at + response.json().get("maxResults", 0)
@@ -171,7 +170,12 @@ class JiraAdapter:
         parent_key = fields["parent"]["key"] if fields.get("parent") else None
         title = fields["summary"] if fields.get("summary") else None
         key = issue["key"] if issue.get("key") else None
-        worklogs = WorklogsForIssue(issue["id"], self.__map_workloads_to_model(fields.get("worklog", {})))
+        total_worklogs = fields.get("worklog", {}).get("total", 0) if fields.get("worklog") else 0
+        if total_worklogs >= 20:
+            logger.warning("Total worklogs for issue %s is %s", key, total_worklogs)
+            worklogs = self.get_worklogs_for_issue(key)
+        else:
+            worklogs = WorklogsForIssue(issue["id"], self.__map_workloads_to_model(fields.get("worklog", {})))
 
         return Issue(id=issue["id"],
                      key=key,
