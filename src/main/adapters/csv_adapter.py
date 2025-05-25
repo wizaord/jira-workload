@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CsvAdapter:
-    """Class to write in a CSV file"""
+    """Class to write in a CSV file """
 
     def __init__(self, file_path: str):
         """Constructor of the class"""
