@@ -15,7 +15,7 @@ class CsvAdapter:
 
     def write(self, headers: list[str], rows: list[dict]):
         """Write the headers in the file"""
-        with open(self.file_path, mode='w', newline='', encoding="cp1252") as csvfile:
+        with open(self.file_path, 'w', newline='', encoding="cp1252") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter=";")
             writer.writeheader()
             for row in rows:
