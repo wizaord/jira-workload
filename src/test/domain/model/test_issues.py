@@ -15,27 +15,27 @@ class TestIssues(unittest.TestCase):
     def test_counts_issues_correctly(self):
         """Test that the count_issues method returns the correct number of issues"""
         issues = Issues([
-            Issue("1", "key", "title", WorklogsForIssue("1", [])),
-            Issue("2", "key", "title", WorklogsForIssue("2", [])),
+            Issue("1", "key", "title", "A faire", WorklogsForIssue("1", [])),
+            Issue("2", "key", "title", "En cours", WorklogsForIssue("2", [])),
         ])
         self.assertEqual(issues.count_issues(), 2)
 
     def test_get_all_distinct_worklogs_user_emails_return_empty_if_no_worklogs(self):
         """Test that the get_all_distinct_user_emails method returns the correct emails"""
         issues = Issues([
-            Issue("1", "key", "title", WorklogsForIssue("1", [])),
-            Issue("2", "key", "title", WorklogsForIssue("2", [])),
+            Issue("1", "key", "title", "A faire", WorklogsForIssue("1", [])),
+            Issue("2", "key", "title", "En cours", WorklogsForIssue("2", [])),
         ])
         self.assertEqual(len(issues.get_all_distinct_worklogs_user_emails()), 0)
 
     def test_get_all_distinct_worklogs_user_emails_return_all_users(self):
         """Test that the get_all_distinct_user_emails method returns the correct emails"""
         issues = Issues([
-            Issue("1", "key", "title", WorklogsForIssue("1", [
+            Issue("1", "key", "title", "Terminé", WorklogsForIssue("1", [
                 Worklog("w11", "email1", datetime.now(), 10, "1"),
                 Worklog("w21", "email2", datetime.now(), 10, "2"),
             ])),
-            Issue("2", "key", "title", WorklogsForIssue("2", [
+            Issue("2", "key", "title", "En cours", WorklogsForIssue("2", [
                 Worklog("w21", "email1", datetime.now(), 10, "1"),
                 Worklog("w22", "email3", datetime.now(), 10, "2"),
             ])),
@@ -46,11 +46,11 @@ class TestIssues(unittest.TestCase):
     def test_filter_for_user_returns_only_issues_for_user(self):
         """Test that the filter_for_user method returns the correct issues"""
         issues = Issues([
-            Issue("1", "key", "title", WorklogsForIssue("1", [
+            Issue("1", "key", "title", "A faire", WorklogsForIssue("1", [
                 Worklog("w11", "email1", datetime.now(), 10, "1"),
                 Worklog("w21", "email2", datetime.now(), 10, "2"),
             ])),
-            Issue("2", "key", "title", WorklogsForIssue("2", [
+            Issue("2", "key", "title", "En cours", WorklogsForIssue("2", [
                 Worklog("w21", "email1", datetime.now(), 10, "1"),
                 Worklog("w22", "email3", datetime.now(), 10, "2"),
             ])),
