@@ -4,41 +4,28 @@ Project to extract from JIRA the workload assigned to a component. Extract the w
 
 # Requirements
 
-## Step 1 - Create environment (linux)
+## Etape 1 - installation des outils
+Installer python 3 => https://www.python.org/downloads/
+Installer git => https://git-scm.com/downloads/win
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+Créer un répertoire "jiraLoader" et téléchargez le projet via les commandes suivantes : 
 
-## Step 1 - Create environment (Windows)
+Dans un terminal, tapez : 
+cd <chemin de votre répertoire jiraLoader>
+git clone https://github.com/wizaord/jira-workload.git .
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
+## Etape 2 - Initialisez le fichier configuration.ini
 
-## Step 2 - Create a `.env` file
+Dans le répertoire 'src', copiez le fichier `configuration_template.ini` dans le même répertoire mais avec le nom `configuration.ini`
+Remplissez ensuite dans le fichier 'configuration.ini' les informations suivantes : 
 
-Copy the `configuration_template.ini` file to `configuration.ini` file and fill in the necessary information.
+- Pour Username, indiquez votre email
+- Pour Api_token, indiquez la valeur de votre token JIRA
+- Pour ComponentName, indiquez Seittra
+- Pour liste_utilisateurs, indiquez la ligne suivante : i.thibault@seiitra.com, s.trirach.ext@seiitra.com,c.mirou@seiitra.com,m.barik.ext@seiitra.com,y.cheikhani.ext@seiitra.com,g.bernard.ext@seiitra.com,k.mckenna.ext@seiitra.com
 
-## Step 3 - Run the application (Linux)
 
-```bash
-python3 src/main/window.py
-```
-## Step 3 - Run the application (Windows)
+## Etape 3 - Lancer l'application
 
-```bash
-python src/main/window.py
-```
-
-## Bonus : Créer un exécutable
-### Windows
-
-```bash
-pyinstaller --onefile --windowed src/main/window.py
-```
+Double cliquez sur le fichier "run.bat"
 

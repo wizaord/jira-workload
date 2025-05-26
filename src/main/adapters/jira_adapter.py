@@ -55,7 +55,7 @@ class JiraAdapter:
         # convert start_at to int
         params = {
             "jql": jql,
-            "fields": "key, summary, parent, worklog",
+            "fields": "key, summary, parent, worklog, statusCategory",
             "maxResults": 100,
             "startAt": start_at,
         }
@@ -169,6 +169,7 @@ class JiraAdapter:
         fields = issue["fields"] if issue.get("fields") else {}
         parent_key = fields["parent"]["key"] if fields.get("parent") else None
         title = fields["summary"] if fields.get("summary") else None
+        status = fields["statusCategory"]["name"] if fields.get("statusCategory") else None
         key = issue["key"] if issue.get("key") else None
         total_worklogs = fields.get("worklog", {}).get("total", 0) if fields.get("worklog") else 0
         if total_worklogs >= 20:
@@ -180,6 +181,7 @@ class JiraAdapter:
         return Issue(id=issue["id"],
                      key=key,
                      title=title,
+                     status=status,
                      worklogs_for_issue=worklogs,
                      parent_key=parent_key)
 

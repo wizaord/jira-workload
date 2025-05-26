@@ -32,7 +32,7 @@ class WorklogsForTechnicalStory:
                 continue
             logger.info("calcul pour le user <%s>", user_email)
             technical_story_for_user = technical_stories.filter_for_user(user_email)
-            for technical_story in technical_story_for_user.issues:
+            for technical_story in technical_story_for_user.issues:    
                 logger.info("calcul pour le technical story <%s>", technical_story.title)
                 spent_time_on_issue = technical_story.get_worklogs_from_issue_and_sub_issues().get_spent_time_group_by_day()
                 for day, time_spent in spent_time_on_issue.items():
