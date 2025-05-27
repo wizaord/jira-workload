@@ -24,18 +24,22 @@ jira_adapter = JiraAdapter(__jira_username, __jira_api_token)
 csv_adapter = CsvAdapter("workload.csv")
 
 
-def main(user=None):
+def main(user=None, date_debut=None, date_fin=None):
     if user is None:
         raise ValueError("Le paramètre 'user' ne peut pas être None.")
         # Create the CSV file name with the current date
+    if date_debut is None:
+        logger.info("Pas de date de début sélectionnée, on prend le Jour J - 2 semaines")
+        date_debut = date.today() - timedelta(weeks=2)
+    if date_fin is None:
+        logger.info("Pas de date de fin sélectionnée, on prend le jour J")
+        date_fin = date.today()
     today = date.today()
     csv_file_name = f"workload_user_{user}_epic_ts_day_{today.strftime('%Y-%m-%d')}.csv"
     csv_adapter = CsvAdapter(csv_file_name)
 
-
     service = WorklogsForTechnicalStory(jira_adapter, csv_adapter)
-    date_limit = date.today() - timedelta(weeks=2)
-    service.extract_workloads_group_by_user_date_ts_in_csv_file(user, date_limit)
+    service.extract_workloads_group_by_user_date_ts_in_csv_file(user, date_debut, date_fin)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

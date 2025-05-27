@@ -3,11 +3,11 @@ import logging
 import sys
 import traceback
 
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject, QDate
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout,
                              QWidget, QPushButton, QPlainTextEdit, QHBoxLayout,
-                             QComboBox, QMessageBox)
+                             QComboBox, QMessageBox, QDateEdit)
 
 # Import the modules containing the functions to call.
 import workload_extract_for_user
@@ -109,8 +109,35 @@ class JiraChachouExporter(QMainWindow):
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
 
+        # Layout horizontal pour les dates
+        dates_layout = QHBoxLayout()
+
+        # Champs de date (début et fin)
+        self.date_debut = QDateEdit()
+        self.date_debut.setCalendarPopup(True)
+        self.date_debut.setDate(QDate.currentDate())
+        self.date_debut.setFixedWidth(200)
+        label_debut = QLabel("Date de début :")
+        label_debut.setContentsMargins(0, 0, 0, 0)
+        label_debut.setFixedWidth(100)
+        dates_layout.addWidget(label_debut)
+        dates_layout.addWidget(self.date_debut)
+
+        self.date_fin = QDateEdit()
+        self.date_fin.setCalendarPopup(True)
+        self.date_fin.setDate(QDate.currentDate())
+        self.date_fin.setFixedWidth(200)
+        label_fin = QLabel("Date de fin :")
+        label_fin.setContentsMargins(0, 0, 0, 0)
+        label_fin.setFixedWidth(100)
+        dates_layout.addWidget(label_fin)
+        dates_layout.addWidget(self.date_fin)
+
+        # Ajout du layout horizontal au layout principal
+        layout.addLayout(dates_layout)
+
         btn1 = QPushButton("Extraire les imputations de toute l'équipe")
-        btn1.clicked.connect(lambda: self.run_in_thread(workload_extract_for_user_and_technical_story.main))
+        btn1.clicked.connect(self.run_all_users_extraction)
         layout.addWidget(btn1)
 
         # Charger la liste des utilisateurs depuis la configuration
@@ -240,7 +267,15 @@ class JiraChachouExporter(QMainWindow):
     def run_user_specific_extraction(self):
         """Exécute l'extraction pour l'utilisateur sélectionné"""
         selected_user = self.user_select_combo.currentText()
-        self.run_in_thread(lambda: workload_extract_for_user.main(selected_user))
+        date_debut = self.date_debut.date()
+        date_fin = self.date_fin.date()
+        self.run_in_thread(lambda: workload_extract_for_user.main(selected_user, date_debut, date_fin))
+
+    def run_all_users_extraction(self):
+        """Exécute l'extraction pour tous les utilisateurs"""
+        date_debut = self.date_debut.date()
+        date_fin = self.date_fin.date()
+        self.run_in_thread(lambda: workload_extract_for_user_and_technical_story.main(date_debut, date_fin))
 
     def _cleanup_finished_threads(self):
         """Nettoyer les threads terminés pour libérer les ressources"""
