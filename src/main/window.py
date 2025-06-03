@@ -133,6 +133,11 @@ class JiraChachouExporter(QMainWindow):
         dates_layout.addWidget(label_fin)
         dates_layout.addWidget(self.date_fin)
 
+        # Charger la liste des utilisateurs depuis la configuration
+        user_list = liste_utilisateurs.split(",")
+        user_list = [user.strip() for user in user_list if user.strip()]  # Nettoyer les espaces
+        self.userList = user_list
+
         # Ajout du layout horizontal au layout principal
         layout.addLayout(dates_layout)
 
@@ -140,9 +145,7 @@ class JiraChachouExporter(QMainWindow):
         btn1.clicked.connect(self.run_all_users_extraction)
         layout.addWidget(btn1)
 
-        # Charger la liste des utilisateurs depuis la configuration
-        user_list = liste_utilisateurs.split(",")
-        user_list = [user.strip() for user in user_list if user.strip()]  # Nettoyer les espaces
+
 
         # Ajout d'un layout horizontal pour le second bouton et la select box
         btn_select_layout = QHBoxLayout()
@@ -275,7 +278,8 @@ class JiraChachouExporter(QMainWindow):
         """Exécute l'extraction pour tous les utilisateurs"""
         date_debut = self.date_debut.date()
         date_fin = self.date_fin.date()
-        self.run_in_thread(lambda: workload_extract_for_user_and_technical_story.main(date_debut, date_fin))
+        usersList = self.userList
+        self.run_in_thread(lambda: workload_extract_for_user_and_technical_story.main(date_debut, date_fin, usersList))
 
     def _cleanup_finished_threads(self):
         """Nettoyer les threads terminés pour libérer les ressources"""

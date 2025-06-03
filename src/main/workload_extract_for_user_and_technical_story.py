@@ -24,14 +24,14 @@ jira_adapter = JiraAdapter(__jira_username, __jira_api_token)
 
 
 
-def main(date_debut=None, date_fin=None):
+def main(date_debut=None, date_fin=None,user_list=None):
     # Create the CSV file name with the current date
     today = date.today()
     csv_file_name = f"workload_user_epic_ts_day_{today.strftime('%Y-%m-%d')}.csv"
     csv_adapter = CsvAdapter(csv_file_name)
 
     service = WorklogsForTechnicalStory(jira_adapter, csv_adapter)
-    service.extract_workloads_group_by_user_date_ts_in_csv_file(date_debut=date_debut, date_fin=date_fin)
+    service.extract_workloads_group_by_user_date_ts_in_csv_file(date_debut=date_debut, date_fin=date_fin, users=user_list)
 
 
 if __name__ == "__main__":
