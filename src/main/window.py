@@ -17,6 +17,7 @@ from src import ROOT_DIR
 config = configparser.ConfigParser()
 config.read(ROOT_DIR + '/configuration.ini')
 liste_utilisateurs = config['JIRA']['liste_utilisateurs']
+connected_user = config['JIRA']['Mon_adresse_mail']
 
 class LogSignaler(QObject):
     """Classe pour émettre des signaux de log de façon thread-safe"""
@@ -112,10 +113,15 @@ class JiraChachouExporter(QMainWindow):
         # Layout horizontal pour les dates
         dates_layout = QHBoxLayout()
 
+        #Date du jour
+        today = QDate.currentDate()
+        # Calcul du lundi (début de semaine)
+        start_of_week = today.addDays(1 - today.dayOfWeek())
+
         # Champs de date (début et fin)
         self.date_debut = QDateEdit()
         self.date_debut.setCalendarPopup(True)
-        self.date_debut.setDate(QDate.currentDate())
+        self.date_debut.setDate(start_of_week)
         self.date_debut.setFixedWidth(200)
         label_debut = QLabel("Date de début :")
         label_debut.setContentsMargins(0, 0, 0, 0)
@@ -123,9 +129,12 @@ class JiraChachouExporter(QMainWindow):
         dates_layout.addWidget(label_debut)
         dates_layout.addWidget(self.date_debut)
 
+
+        # Calcul du vendredi (fin de semaine)
+        end_of_week = today.addDays(5 - today.dayOfWeek())
         self.date_fin = QDateEdit()
         self.date_fin.setCalendarPopup(True)
-        self.date_fin.setDate(QDate.currentDate())
+        self.date_fin.setDate(end_of_week)
         self.date_fin.setFixedWidth(200)
         label_fin = QLabel("Date de fin :")
         label_fin.setContentsMargins(0, 0, 0, 0)
@@ -158,6 +167,7 @@ class JiraChachouExporter(QMainWindow):
         # Select box
         self.user_select_combo = QComboBox()
         self.user_select_combo.addItems(user_list)  # Utiliser la liste extraite
+        self.user_select_combo.setCurrentIndex(self.user_select_combo.findText(connected_user))
         btn_select_layout.addWidget(self.user_select_combo)
 
         # Ajout du layout horizontal au layout principal
