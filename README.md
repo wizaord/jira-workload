@@ -24,7 +24,7 @@ Remplissez ensuite dans le fichier 'configuration.ini' les informations suivante
 
 - Pour Username, indiquez votre email
 - Pour Api_token, indiquez la valeur de votre token JIRA
-- Pour ComponentName, indiquez Seittra
+- Pour Mon_adresse_mail, indiquez votre adresse mail (cela permettra de vous présélectionner dans la liste déroulante
 - Pour liste_utilisateurs, indiquez la ligne suivante :
   xxxx@company.com, yyyy@company.com, etc...
   
